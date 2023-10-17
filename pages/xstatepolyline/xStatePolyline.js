@@ -16,12 +16,53 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAcsAbATwBkBLDMfEI2SgF0qwzoA9EBaANnVI9eAOgAM4iZMkB2ZGnokK1MMMoRitJAsYs2nRABYATAMQAOAIzCD0gJwXetgwGZezgw9ty5QA */
+        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiALQAWIgEYAbMr4AmAOwBOPgA49AVn06dAGhCYlavgGYiys8oNrjavXw0bNJwBfINs0LDxCIggAJwBDAHcCKAomfHEwGP4hJBA0MUlpWQUERWMNIn0nHQMjYx1qpz5lW3sEbSI+PgMNGqMnMyc9NWUNELCMHAJiWMTk1NgAYzjkMGzZfIkpGVySxTUnVWVqvjMRg1GNC5s7RE0KvWMntS8jZWMLcbzJyJn4pPwKQAQnFFgBrWDIUFrQQbURbIq7RA6CxEAzecw6NwvBoGVrIvhqIhNMx6MnNYbONRfcJTKKzAEpWiMVgcbjrXKbQo7UAlLEuXSmZzVUneAb40pWCpnDR8PT6dxPPTVGk-abRf7zZnMNicXhqHIiArbYpKAxmdS9Jzo056ZRWFq3SUHNE9DSDYzKF7dAw6VURdUMrX0Zi0ABqTA5RoRPPkiC9fCI7mtgoMTh8ssdbX2Rx6Q1M5mM3XqwS++FQEDgcIDhDhxsRvKUOh8lUMjlGB0J3glinTqkJso0yp0RY8KP9dOIpHIdZjptKmgMrc8zQCTS8ah7V0qV3c7pMjzqE9+GrmgNn3PnPgtGnqvie5UM8olxlcRZ8hisOiH6bGISCQA */
         id: "polyLine",
         initial: "idle",
         states : {
             idle: {
-            }
+                on: {
+                    MOUSECLICK: {
+                        target: "drawing",
+                        actions: ["createLine"],
+                    
+                    }
+                }
+            },
+
+            drawing: {
+                on: {
+                    Enter: {
+                        actions: ["saveLine"],
+                        target: "idle",
+                    },
+
+                    Escape: {
+                        actions: ["abandon"],
+                        target : "idle"
+                    },
+
+                    Backspace: {
+                        actions: ["removeLastPoint"],
+                        cond: "plusDeDeuxPoints"
+                    },
+
+                    MOUSECLICK: [{
+                        actions: ["addPoint"],
+                        target: "drawing",
+                        internal: true,
+                        cond: "pasPlein"
+                    }, "idle"],
+
+                    MOUSEMOVE: {
+                        actions: ["setLastPoint"],
+                        target: "drawing",
+                        internal: true,
+                    }
+
+                },
+            },
+
         }
     },
     // Quelques actions et guardes que vous pouvez utiliser dans votre machine
